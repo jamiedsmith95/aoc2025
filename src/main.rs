@@ -134,8 +134,63 @@ fn d1p1(file_name: String) {
 fn d3p1(file_name: String) {
     let file_contents = fs::read_to_string(file_name).expect("Should be able to read file");
     let instructions = file_contents.lines();
+    let mut total = 0;
+    instructions.for_each(|line| {
+        // let last: u32 = line.chars().last().expect("All should be chars.").to_digit(10).expect("Should be a digit");
+        let max = line
+            .split_at(line.len() - 1)
+            .0
+            .chars()
+            .max()
+            .expect("Should have a max")
+            .to_digit(10)
+            .expect("Should be digit");
+        let max_idx = line
+            .find(&max.to_string())
+            .expect("Line should contain its maximum");
+        let second: u32 = line
+            .split_at(max_idx + 1)
+            .1
+            .chars()
+            .max()
+            .expect("Should have a max")
+            .to_digit(10)
+            .expect("Should be a digit");
+        eprintln!("first {max} second {second}");
+        total += (max * 10) + second;
+    });
+    eprintln!("Total: {total}");
+}
+
+fn d3p2(file_name: String) {
+    let file_contents = fs::read_to_string(file_name).expect("Should be able to read file");
+    let instructions = file_contents.lines();
+    let mut total: u64 = 0;
+    instructions.for_each(|line| {
+        // let last: u32 = line.chars().last().expect("All should be chars.").to_digit(10).expect("Should be a digit");
+        let mut max_idx: i16 = -1;
+        let mut line_max = 0;
+        for i in 0..12 {
+            let split = line.split_at((max_idx + 1 as i16) as usize);
+            let max = split
+                .1
+                .split_at(split.1.len() -(11-i))
+                .0
+                .chars()
+                .max()
+                .expect("Should have a max")
+                .to_digit(10)
+                .expect("Should be digit") as u64;
+            max_idx += split.1
+                .find(&max.to_string())
+                .expect("Line should contain its maximum") as i16 + 1;
+            line_max += max * 10_u64.pow(11 - i as u32) as u64;
+        }
+        total += line_max;
+    });
+    eprintln!("Total: {total}");
 }
 
 fn main() {
-    d2p2("data/d2p1".to_owned());
+    d3p2("data/d3p1".to_owned());
 }
