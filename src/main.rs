@@ -191,6 +191,46 @@ fn d3p2(file_name: String) {
     eprintln!("Total: {total}");
 }
 
+
+
+fn d4p1(file_name: String) {
+    let file_contents = fs::read_to_string(file_name).expect("Should be able to read file");
+    let end_line = file_contents.find("\n").expect("Should have end line");
+    let empty_line = ".".repeat(end_line + 1) + "\n";
+    let modified = empty_line.clone() + &file_contents + &empty_line;
+    eprint!("file: \n{modified}");
+    let mut instructions = modified.lines();
+    let new_instructions: Vec<String> = instructions.map(|line| {
+        let new_line = ".".to_owned() + line + &".";
+        eprintln!("{new_line}");
+        new_line
+    }).collect();
+    let mut line_idx = 0;
+    let mut total = 0;
+    new_instructions.iter().for_each(|line| {
+        for idx in 1..line.len() {
+            eprintln!("idx {idx}");
+            if line.split_at(idx).1.starts_with("@") {
+                eprintln!("Line {line}");
+                let block = new_instructions.split_at(line_idx - 1).1.split_at(3).0;
+                eprintln!("block {:?}",block);
+                let mut count = 0;
+                block.iter().for_each(|chunk| {
+                    chunk.split_at(idx-1).1.split_at(3).0.chars().for_each(|ch| {
+                        if ch.to_string().as_str() == "@"  {
+                            count += 1;
+                        }
+                    });
+                    eprintln!("LEN SHOULD BE 3 {count}");
+                });
+                if count <= 4 {total += 1};
+            }
+        }
+        line_idx += 1;
+    });
+    eprintln!("TOTAL: {total}");
+}
+
 fn main() {
-    d3p2("data/d3p1".to_owned());
+    d4p1("data/d4p1".to_owned());
 }
